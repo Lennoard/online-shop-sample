@@ -1,3 +1,4 @@
+from app import App
 import os
 import json
 
@@ -110,6 +111,8 @@ def sub_menu_admin():
     submenu_admin += '1 - Mostrar detalhes\n'
     submenu_admin += '2 - Remover registro\n'
     submenu_admin += '3 - Editar produto\n'
+    submenu_admin += '4 - Adicionar itens ao estoque\n'
+    submenu_admin += '5 - Dar baixa em estoque\n'
     submenu_admin += '0 - Concluir pesquisa\n'
     submenu_admin += '\nOpção >>> '
 
@@ -128,7 +131,6 @@ def sub_menu_cliente():
 def novo_produto():
     print('Adicionando novo produto:\n')
 
-    # obter dados
     nome = input('Nome: ')
     categoria = input('Categoria: ')
     marca = input('Marca: ')
@@ -203,6 +205,14 @@ def pesquisar_produto(produtos):
         
         elif opcao == 3:
             editar_produto(busca, produtos)
+        
+        elif opcao == 4:
+            #add_estoque()
+            pass
+
+        elif opcao == 5:
+            #baixa_estoque()
+            pass
         
         elif opcao == 0:
             main()
@@ -378,5 +388,5 @@ def finalizar(nome_arquivo, produtos):
 
 
 if __name__ == '__main__':
+    App.init()
     main()
-

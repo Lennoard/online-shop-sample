@@ -1,11 +1,10 @@
-from users.user import User
-from utils import *
+from app import App
 
 
 def main():
-    user = User(new_id(), "Lennoard", "l@l.com", 89977665544)
+    pass
 
 
 if __name__ == '__main__':
+    App.init()
     main()
-

@@ -1,1 +1,4 @@
 /venv/
+/produtos.json
+/produtos.db
+/*.bd

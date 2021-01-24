@@ -1,8 +1,13 @@
 import random
 import string
+import os
 
 import main
 from utils.color_utils import Colors
+
+
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def new_id(chars=string.ascii_letters + string.digits) -> str:

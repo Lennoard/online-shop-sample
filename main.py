@@ -1,6 +1,7 @@
 import json
 
 from app import App
+from auth.auth import UserAuth
 from utils.utils import *
 
 
@@ -16,10 +17,10 @@ def main():
     while opcao != 0:
         clear()
         if opcao == 1:
-            iniciar_admin(produtos)
+            iniciar_admin(produtos, usuarios)
 
         elif opcao == 2:
-            iniciar_cliente(produtos, carrinho)
+            iniciar_cliente(produtos, usuarios, carrinho)
 
         elif opcao == 3:
             iniciar_cadastro_usuario(usuarios)
@@ -31,7 +32,7 @@ def main():
         opcao = int(input(menu))
 
     finalizar('produtos.bd', produtos)
-    finalizar('usuarios.bd', produtos)
+    finalizar('usuarios.bd', usuarios)
 
 
 def tela_princiapal():
@@ -44,7 +45,16 @@ def tela_princiapal():
     return menu
 
 
-def iniciar_admin(produtos):
+def iniciar_admin(produtos, usuarios):
+    usuario = autenticar(usuarios)
+    if usuario is None:
+        print_error('Credenciais incorretas')
+        return
+
+    if not usuario['admin']:
+        print_error('ACESSO NEGADO')
+        return
+
     menu_admin = tela_principal_admin()
     opcao = int(input(menu_admin))
 
@@ -88,7 +98,13 @@ def iniciar_cadastro_usuario(usuarios):
     usuarios.append(usuario)
 
 
-def iniciar_cliente(produtos, carrinho):
+def iniciar_cliente(produtos, usuarios, carrinho):
+    usuario = autenticar(usuarios)
+
+    if usuario is None:
+        print_error('Credenciais incorretas')
+        return
+
     menu_cliente = tela_principal_cliente()
     opcao = int(input(menu_cliente))
 
@@ -301,7 +317,7 @@ def pesquisar_produto_cliente(produtos, carrinho):
 
         if opcao == 1:
             id = detalhar_produto(busca, produtos, carrinho)
-            add = print('Adicionar ao carrinho?\nS - SIM\nN - NÃO\n> ')
+            add = input('Adicionar ao carrinho?\nS - SIM\nN - NÃO\n> ')
             add = add.upper()
             if add == 'S':
                 carrinho.append(produtos[id])
@@ -435,7 +451,7 @@ def inicializar(nome_arquivo):
         dados = arquivo.readline()
         arquivo.close()
         produtos_carregados = json.loads(dados)
-    
+
     return produtos_carregados
 
 
@@ -444,6 +460,14 @@ def finalizar(nome_arquivo, produtos):
     arquivo = open(nome_arquivo, 'w')
     arquivo.write(dados)
     arquivo.close()
+
+
+def autenticar(usuarios):
+    print_info("---- LOGIN ----")
+    email = input('Email: ')
+    senha = input('Senha: ')
+
+    return UserAuth(usuarios).auth(email, senha)
 
 
 if __name__ == '__main__':

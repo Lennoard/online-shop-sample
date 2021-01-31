@@ -3,6 +3,7 @@ import json
 from app import App
 from auth.auth import UserAuth
 from utils.utils import *
+import getpass
 
 
 def main():
@@ -13,9 +14,9 @@ def main():
 
     menu = tela_princiapal()
     opcao = int(input(menu))
+    clear()
 
     while opcao != 0:
-        clear()
         if opcao == 1:
             iniciar_admin(produtos, usuarios)
 
@@ -30,6 +31,7 @@ def main():
 
         input('\n<enter> to continue...')
         opcao = int(input(menu))
+        clear()
 
     finalizar('produtos.bd', produtos)
     finalizar('usuarios.bd', usuarios)
@@ -48,15 +50,18 @@ def tela_princiapal():
 def iniciar_admin(produtos, usuarios):
     usuario = autenticar(usuarios)
     if usuario is None:
+        clear()
         print_error('Credenciais incorretas')
         return
 
     if not usuario['admin']:
+        clear()
         print_error('ACESSO NEGADO')
         return
 
     menu_admin = tela_principal_admin()
     opcao = int(input(menu_admin))
+    clear()
 
     while opcao != 0:
         clear()
@@ -84,7 +89,7 @@ def iniciar_cadastro_usuario(usuarios):
 
     nome = input('Nome: ')
     email = input('Email: ')
-    senha = input('Senha: ')
+    senha = getpass.getpass('Senha: ')
 
     usuario = {
         'nome': nome,
@@ -100,9 +105,11 @@ def iniciar_cliente(produtos, usuarios, carrinho):
     usuario = autenticar(usuarios)
 
     if usuario is None:
+        clear()
         print_error('Credenciais incorretas')
         return
 
+    clear()
     menu_cliente = tela_principal_cliente()
     opcao = int(input(menu_cliente))
 
@@ -499,7 +506,7 @@ def finalizar(nome_arquivo, produtos):
 def autenticar(usuarios):
     print_info("---- LOGIN ----")
     email = input('Email: ')
-    senha = input('Senha: ')
+    senha = getpass.getpass('Senha: ')
 
     return UserAuth(usuarios).auth(email, senha)
 

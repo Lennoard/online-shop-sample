@@ -53,10 +53,8 @@ def iniciar_admin(produtos):
         if opcao == 1:
             # criar produto
             produto = novo_produto()
-
-            # salvar produto
-            # TODO: gravar imediatamente no arquivo
             produtos.append(produto)
+            salvar('produtos.bd', produtos)
 
         elif opcao == 2:
             mostrar_produtos(produtos)
@@ -162,6 +160,8 @@ def sub_menu_cliente():
     clear()
     submenu_cliente = f'{Colors.INFO}Selecione a opção desejada:{Colors.ENDC}\n'
     submenu_cliente += '1 - Mostrar detalhes\n'
+    submenu_cliente += '2 - Adicionar ao carrinho\n'
+    submenu_cliente += '3 - '
     submenu_cliente += '0 - Concluir pesquisa\n'
     submenu_cliente += '\nOpção >>> '
 
@@ -257,12 +257,10 @@ def pesquisar_produto(produtos):
             editar_produto(busca, produtos)
 
         elif opcao == 4:
-            # add_estoque()
-            pass
+            add_estoque(busca, produtos)
 
         elif opcao == 5:
-            # baixa_estoque()
-            pass
+            baixa_estoque(busca, produtos)
 
         elif opcao == 0:
             main()
@@ -382,6 +380,36 @@ def editar_produto(busca, produtos):
     produtos[id_produto] = produto
 
 
+def add_estoque(busca, produtos):
+    clear()
+    for num in busca:
+        print(f'ID produto: {num}')
+        print('produto:', produtos[num]['nome'])
+        print('Quantidade em estoque: ', produtos[num]['qtd_estoque'])
+        print('---' * 12)
+
+    id_produto = int(input('Digite o ID do produto a ser editado:\n> '))
+    qtd = int(input('Digite a quantidade que será adicionada ao estoque:\n> '))
+
+    produtos[id_produto]['qtd_estoque'] += qtd
+    print("Adicionado com sucesso!")
+
+
+def baixa_estoque(busca, produtos):
+    clear()
+    for num in busca:
+        print(f'ID produto: {num}')
+        print('produto:', produtos[num]['nome'])
+        print('Quantidade em estoque: ', produtos[num]['qtd_estoque'])
+        print('---' * 12)
+
+    id_produto = int(input('Digite o ID do produto a ser editado:\n> '))
+    qtd = int(input('Digite a quantidade que será dado baixa em estoque:\n> '))
+
+    produtos[id_produto]['qtd_estoque'] -= qtd
+    print("Dado baixa com sucesso!")
+
+
 def pesquisa_nome(produtos):
     clear()
     id_produto = 0
@@ -437,6 +465,12 @@ def inicializar(nome_arquivo):
         produtos_carregados = json.loads(dados)
     
     return produtos_carregados
+
+
+def salvar(nome_arquivo, produtos):
+    dados = json.dumps(produtos)
+    arquivo = open(nome_arquivo, 'w')
+    arquivo.write(dados)
 
 
 def finalizar(nome_arquivo, produtos):

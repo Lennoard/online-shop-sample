@@ -101,14 +101,7 @@ def iniciar_cadastro_usuario(usuarios):
     usuarios.append(usuario)
 
 
-def iniciar_cliente(produtos, usuarios, carrinho):
-    usuario = autenticar(usuarios)
-
-    if usuario is None:
-        clear()
-        print_error('Credenciais incorretas')
-        return
-
+def tela_cliente(produtos, carrinho):
     clear()
     menu_cliente = tela_principal_cliente()
     opcao = int(input(menu_cliente))
@@ -122,14 +115,24 @@ def iniciar_cliente(produtos, usuarios, carrinho):
             mostrar_produtos(produtos)
 
         elif opcao == 3:
-            # TODO
-            pass
+            mostrar_carrinho(carrinho)#verificar depois
 
         else:
             print('Opção inválida!\n')
 
         input('\n<enter> to continue...')
         opcao = int(input(menu_cliente))
+
+
+def iniciar_cliente(produtos, usuarios, carrinho):
+    usuario = autenticar(usuarios)
+
+    if usuario is None:
+        clear()
+        print_error('Credenciais incorretas')
+        return
+    
+    tela_cliente(produtos, carrinho)
 
 
 def tela_principal_admin():
@@ -165,6 +168,17 @@ def tela_principal_cliente():
     return menu_cliente
 
 
+def tela_carrinho():
+    menu_carrinho = f'\n{Colors.INFO}***** Online Shop Sample *****{Colors.ENDC}\n'
+    menu_carrinho += '1 - Ver Carrinho\n'
+    menu_carrinho += '2 - Remover itens do Carrinho\n'
+    menu_carrinho += '3 - Finalizar compra\n'
+    menu_carrinho += '0 - Sair\n'
+    menu_carrinho += '\nOpção >>> '
+
+    return menu_carrinho
+
+
 def sub_menu_admin():
     clear()
     submenu_admin = f'{Colors.INFO}Selecione a opção desejada:{Colors.ENDC}\n'
@@ -183,8 +197,6 @@ def sub_menu_cliente():
     clear()
     submenu_cliente = f'{Colors.INFO}Selecione a opção desejada:{Colors.ENDC}\n'
     submenu_cliente += '1 - Mostrar detalhes\n'
-    submenu_cliente += '2 - Adicionar ao carrinho\n'
-    submenu_cliente += '3 - '
     submenu_cliente += '0 - Concluir pesquisa\n'
     submenu_cliente += '\nOpção >>> '
 
@@ -321,14 +333,15 @@ def pesquisar_produto_cliente(produtos, carrinho):
         opcao = int(input(menu))
 
         if opcao == 1:
-            id = detalhar_produto(busca, produtos, carrinho)
+            id = detalhar_produto(busca, produtos)
             add = input('Adicionar ao carrinho?\nS - SIM\nN - NÃO\n> ')
             add = add.upper()
             if add == 'S':
                 carrinho.append(produtos[id])
 
+
         elif opcao == 0:
-            main()
+            tela_cliente(produtos, carrinho)
 
         else:
             print('Opção inválida!')
@@ -341,7 +354,7 @@ def pesquisar_produto_cliente(produtos, carrinho):
             pesquisar_produto_cliente(produtos)
 
         elif opcao == 2:
-            iniciar_cliente(produtos)
+            tela_cliente(produtos)
 
 
 def detalhar_produto(busca, produtos):
@@ -431,6 +444,59 @@ def baixa_estoque(busca, produtos):
 
     produtos[id_produto]['qtd_estoque'] -= qtd
     print("Dado baixa com sucesso!")
+
+
+def opcoes_carrinho(carrinho, produtos):
+    clear()
+    menu = tela_carrinho()
+    opcao = int(input(menu))
+
+    while opcao != 0:
+        clear()
+        if opcao == 1:
+            mostrar_carrinho(carrinho)
+
+        elif opcao == 2:
+            remover_item_carrinho(carrinho)
+
+        elif opcao == 3:
+            efetuar_compra(carrinho, produtos)
+
+        else:
+            print('Opção inválida!\n')
+
+        input('\n<enter> to continue...')
+        opcao = int(input(menu))
+
+
+def mostrar_carrinho(carrinho):
+    clear()
+    for item in carrinho:
+        print_detalhes(item)
+
+
+def remover_item_carrinho(carrinho):
+    clear()
+    cont = 0
+    for item in carrinho:
+        print(f'ID: {cont}')
+        print_nome_marca(item)
+        cont += 1
+    
+    id = print(int(input('Digite o ID do item a ser removido\n> ')))
+    del carrinho[id]
+
+
+#Fazer a opção de efetuar a compra
+def efetuar_compra(carrinho, produtos):
+    clear()
+    
+    for item in carrinho:
+        if item in produtos:
+            print(produtos['nome'])
+            qtd = int(input('Quantidade a ser comprada: '))
+
+
 
 
 def pesquisa_nome(produtos):

@@ -115,7 +115,7 @@ def tela_cliente(produtos, carrinho):
             mostrar_produtos(produtos)
 
         elif opcao == 3:
-            mostrar_carrinho(carrinho)#verificar depois
+            mostrar_carrinho(carrinho, produtos)  # verificar depois
 
         else:
             print('Opção inválida!\n')
@@ -131,7 +131,7 @@ def iniciar_cliente(produtos, usuarios, carrinho):
         clear()
         print_error('Credenciais incorretas')
         return
-    
+
     tela_cliente(produtos, carrinho)
 
 
@@ -238,7 +238,6 @@ def mostrar_produtos(produtos):
 
 
 def print_detalhes(produto):
-    clear()
     print('Nome: ', produto['nome'])
     print('Categoria: ', produto['categoria'])
     print('Marca: ', produto['marca'])
@@ -249,10 +248,9 @@ def print_detalhes(produto):
 
 
 def print_nome_marca(produto):
-    clear()
     print('Nome: ', produto['nome'])
     print('Marca: ', produto['marca'])
-    print(12 * '---')
+    print_info(12 * '---')
 
 
 def pesquisar_produto(produtos):
@@ -339,22 +337,22 @@ def pesquisar_produto_cliente(produtos, carrinho):
             if add == 'S':
                 carrinho.append(produtos[id])
 
-
         elif opcao == 0:
             tela_cliente(produtos, carrinho)
 
         else:
-            print('Opção inválida!')
+            print_error('Opção inválida!')
             opcao = int(input(menu))
 
     else:
-        print('Nenhum resultado encontrado!')
+        clear()
+        print_warning('Nenhum resultado encontrado!')
         opcao = input('Pressione:\n1 - Nova pesquisa\n2 - Voltar ao menu inicial\n> ')  # aqui
         if opcao == 1:
-            pesquisar_produto_cliente(produtos)
+            pesquisar_produto_cliente(produtos, carrinho)
 
         elif opcao == 2:
-            tela_cliente(produtos)
+            tela_cliente(produtos, carrinho)
 
 
 def detalhar_produto(busca, produtos):
@@ -366,6 +364,7 @@ def detalhar_produto(busca, produtos):
     id_produto = int(input('Digite o ID do produto a detalhar: '))
     if id_produto in busca:
         print_detalhes(produtos[id_produto])
+        return id_produto
     else:
         print('ID fora do intervalo da busca!\n')
         detalhar_produto(busca, produtos)
@@ -428,7 +427,7 @@ def add_estoque(busca, produtos):
     qtd = int(input('Digite a quantidade que será adicionada ao estoque:\n> '))
 
     produtos[id_produto]['qtd_estoque'] += qtd
-    print("Adicionado com sucesso!")
+    print('Adicionado com sucesso!')
 
 
 def baixa_estoque(busca, produtos):
@@ -443,7 +442,7 @@ def baixa_estoque(busca, produtos):
     qtd = int(input('Digite a quantidade que será dado baixa em estoque:\n> '))
 
     produtos[id_produto]['qtd_estoque'] -= qtd
-    print("Dado baixa com sucesso!")
+    print('Dado baixa com sucesso!')
 
 
 def opcoes_carrinho(carrinho, produtos):
@@ -454,7 +453,7 @@ def opcoes_carrinho(carrinho, produtos):
     while opcao != 0:
         clear()
         if opcao == 1:
-            mostrar_carrinho(carrinho)
+            mostrar_carrinho(carrinho, produtos)
 
         elif opcao == 2:
             remover_item_carrinho(carrinho)
@@ -469,10 +468,21 @@ def opcoes_carrinho(carrinho, produtos):
         opcao = int(input(menu))
 
 
-def mostrar_carrinho(carrinho):
+def mostrar_carrinho(carrinho, produtos):
     clear()
+    if len(carrinho) == 0:
+        print_warning('Carrinho vazio!')
+        return
+
     for item in carrinho:
         print_detalhes(item)
+
+    print('\nGerenciar: 1')
+    print('Voltar: 0')
+    opcao = int(input('> '))
+
+    if opcao == 1:
+        opcoes_carrinho(carrinho, produtos)
 
 
 def remover_item_carrinho(carrinho):
@@ -482,21 +492,31 @@ def remover_item_carrinho(carrinho):
         print(f'ID: {cont}')
         print_nome_marca(item)
         cont += 1
-    
-    id = print(int(input('Digite o ID do item a ser removido\n> ')))
-    del carrinho[id]
+
+    sku = int(input('Digite o ID do item a ser removido\n> '))
+    del carrinho[sku]
 
 
-#Fazer a opção de efetuar a compra
+# Fazer a opção de efetuar a compra
 def efetuar_compra(carrinho, produtos):
     clear()
-    
+
+    valor_total = 0
     for item in carrinho:
         if item in produtos:
-            print(produtos['nome'])
+            print('\n' + item['nome'])
             qtd = int(input('Quantidade a ser comprada: '))
-
-
+            valor_total += item['valor'] * qtd
+            
+    print_warning(f'Confirmar a compra no valor de {valor_total}? (S/N)')
+    opcao = input('> ')
+    
+    if opcao == 'S':
+        print_success('MUITO OBRIGADO!')
+        carrinho.clear()
+        input('')
+        clear()
+        tela_cliente(produtos, carrinho)
 
 
 def pesquisa_nome(produtos):
@@ -570,7 +590,7 @@ def finalizar(nome_arquivo, produtos):
 
 
 def autenticar(usuarios):
-    print_info("---- LOGIN ----")
+    print_info('---- LOGIN ----')
     email = input('Email: ')
     senha = getpass.getpass('Senha: ')
 
